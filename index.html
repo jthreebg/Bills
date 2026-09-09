@@ -162,6 +162,23 @@
       background: var(--card); border-radius: 18px; padding: 14px 14px 13px;
       box-shadow: 0 1px 0 var(--line);
     }
+    button.metric {
+      border: 0; width: 100%; text-align: left; color: inherit; font: inherit; cursor: pointer;
+    }
+    button.metric .lbl { display: flex; align-items: center; justify-content: space-between; }
+    .pay-chip {
+      flex: 0 0 auto; border: 0; border-radius: 999px;
+      padding: 6px 10px; font: 600 12px Inter, sans-serif;
+      background: var(--blue); color: #fff; text-decoration: none;
+    }
+    html[data-theme="dark"] .pay-chip { background: #C629DD; }
+    textarea.notes {
+      width: 100%; min-height: 88px; resize: vertical;
+      background: rgba(255,255,255,.52);
+      border: 1px solid rgba(18,21,26,.10);
+      border-radius: 16px; padding: 13px 14px;
+      font: 500 16px Inter, sans-serif; color: var(--ink);
+    }
     .metric .lbl { font-size: 11px; color: var(--mute); letter-spacing: .08em; text-transform: uppercase; }
     .metric .num { font-size: 20px; font-weight: 600; letter-spacing: -0.03em; margin-top: 4px; font-variant-numeric: tabular-nums; }
     .section { margin-top: 26px; }
@@ -596,10 +613,10 @@
       <div class="lbl">Take-home</div>
       <div class="num" id="incNum">$0</div>
     </div>
-    <div class="metric">
+    <button type="button" class="metric" onclick="openPage('bills')" aria-label="Open bills">
       <div class="lbl">Bills</div>
       <div class="num" id="billNum">$0</div>
-    </div>
+    </button>
   </div>
 
   <section class="section">
@@ -615,13 +632,16 @@
     <div class="group" id="payList"></div>
   </section>
 
-  <section class="section">
-    <div class="section-h">
-      <h2>Bills</h2>
-      <button class="linkish" onclick="openSheet('bill')">Add</button>
-    </div>
-    <div class="group" id="billList"></div>
-  </section>
+  </div>
+
+  <div id="billsPage" class="page">
+    <section class="section" style="margin-top:0">
+      <div class="section-h">
+        <h2>Bills</h2>
+        <button class="linkish" onclick="openSheet('bill')">Add</button>
+      </div>
+      <div class="group" id="billList"></div>
+    </section>
   </div>
 
   <div id="settingsPage" class="page">
@@ -677,18 +697,25 @@
       </div>
       <label>Belongs to</label>
       <select id="fOwner"></select>
-      <div class="two" id="billExtras">
-        <div>
-          <label>Due day</label>
-          <input id="fDue" type="number" min="1" max="31" placeholder="1" />
+      <div id="billExtras">
+        <div class="two">
+          <div>
+            <label>Due day</label>
+            <input id="fDue" type="number" min="1" max="31" placeholder="1" />
+          </div>
+          <div>
+            <label>Type</label>
+            <select id="fType">
+              <option value="fixed">Fixed</option>
+              <option value="sinking">Sinking fund</option>
+            </select>
+          </div>
         </div>
-        <div>
-          <label>Type</label>
-          <select id="fType">
-            <option value="fixed">Fixed</option>
-            <option value="sinking">Sinking fund</option>
-          </select>
-        </div>
+        <label>Pay website</label>
+        <input id="fPayUrl" type="url" inputmode="url" placeholder="https://…" autocomplete="off" />
+        <p class="note">Opens this site when you tap Pay on the bill.</p>
+        <label>Notes</label>
+        <textarea class="notes" id="fNotes" placeholder="Account hint, login reminder…"></textarea>
       </div>
       <div class="sheet-actions">
         <button type="button" class="btn danger" id="deleteBtn" style="display:none" onclick="deleteItem()">Delete</button>
@@ -737,7 +764,7 @@ const DB_STORE = "state";
 let period = "week";
 let who = "all";
 const navStack = ["home"];
-const PAGE_TITLES = { home: "", settings: "Settings", editor: "Edit" };
+const PAGE_TITLES = { home: "", settings: "Settings", editor: "Edit", bills: "Bills" };
 const store = {
   people: { p1: "Josh", p2: "Sophia" },
   pays: [],
@@ -928,7 +955,9 @@ function openSheet(kind, item) {
   document.getElementById("fAmt").value = item?.amount || "";
   document.getElementById("fDue").value = item?.due || "";
   document.getElementById("fType").value = item?.type || "fixed";
-  document.getElementById("billExtras").style.display = isBill ? "grid" : "none";
+  document.getElementById("fPayUrl").value = item?.payUrl || "";
+  document.getElementById("fNotes").value = item?.notes || "";
+  document.getElementById("billExtras").style.display = isBill ? "block" : "none";
   document.getElementById("deleteBtn").style.display = item ? "block" : "none";
   const sel = document.getElementById("fFreq");
   const list = isBill ? BILL_FREQS : PAY_FREQS;
@@ -954,6 +983,8 @@ function saveItem(e) {
   if (kind === "bill") {
     item.due = Number(document.getElementById("fDue").value) || null;
     item.type = document.getElementById("fType").value;
+    item.payUrl = document.getElementById("fPayUrl").value.trim();
+    item.notes = document.getElementById("fNotes").value.trim();
     const i = store.bills.findIndex(b => b.id === id);
     if (i >= 0) store.bills[i] = item; else store.bills.push(item);
   } else {
@@ -1090,16 +1121,26 @@ function render() {
   `).join("") : `<div class="empty">No paychecks in this view</div>`;
 
   const sorted = [...bills].sort((a,b) => (a.due||99) - (b.due||99));
-  document.getElementById("billList").innerHTML = sorted.length ? sorted.map(b => `
-    <button class="row" onclick='openSheet("bill", ${JSON.stringify(b)})'>
+  document.getElementById("billList").innerHTML = sorted.length ? sorted.map(b => {
+    const when = nextDue(b.due);
+    const dateTxt = when
+      ? when.toLocaleDateString(undefined,{month:"short", day:"numeric"})
+      : "No date";
+    const pay = b.payUrl
+      ? `<button type="button" class="pay-chip" onclick="openPay(event, '${esc(b.payUrl).replace(/'/g, "&#39;")}')">Pay</button>`
+      : "";
+    return `
+    <div class="row" role="button" tabindex="0" onclick="openSheet('bill', store.bills.find(x=>x.id==='${b.id}'))">
       <div class="avatar">${iconFor(b.name,"bill")}</div>
       <div class="row-main">
         <div class="row-title">${esc(b.name)}${b.type==="sinking" ? '<span class="chip">sinking</span>' : ""}${b.owner==="shared" && who==="all" ? '<span class="chip">shared</span>' : ""}</div>
-        <div class="row-sub">${FREQ[b.freq].label}${b.due ? " · due " + b.due : ""} · ${esc(ownerLabel(b.owner))}</div>
+        <div class="row-sub">${money(b.amount)} · ${FREQ[b.freq].label} · ${esc(ownerLabel(b.owner))}</div>
+        ${b.notes ? `<div class="row-sub">${esc(b.notes)}</div>` : ""}
       </div>
-      <div class="row-amt">${money(b.amount)}<small>${money(byPeriod(annual(b)))} / ${periodWord()}</small></div>
-    </button>
-  `).join("") : `<div class="empty">No bills in this view</div>`;
+      ${pay}
+      <div class="row-amt">${dateTxt}<small>${b.due ? "due " + b.due : ""}</small></div>
+    </div>`;
+  }).join("") : `<div class="empty">No bills in this view</div>`;
 
   const upcoming = bills
     .map(b => ({...b, when: nextDue(b.due)}))
@@ -1107,15 +1148,24 @@ function render() {
     .sort((a,b) => a.when - b.when);
 
   document.getElementById("upcoming").innerHTML = upcoming.length ? upcoming.map(b => `
-    <div class="row">
+    <div class="row" role="button" tabindex="0" onclick="openSheet('bill', store.bills.find(x=>x.id==='${b.id}'))">
       <div class="avatar">${iconFor(b.name,"bill")}</div>
       <div class="row-main">
         <div class="row-title">${esc(b.name)}</div>
-        <div class="row-sub"><span class="due-dot"></span>${b.when.toLocaleDateString(undefined,{weekday:"short", month:"short", day:"numeric"})} · ${esc(ownerLabel(b.owner))}</div>
+        <div class="row-sub">${money(b.amount)} · ${esc(ownerLabel(b.owner))}</div>
       </div>
-      <div class="row-amt">${money(b.amount)}</div>
+      ${b.payUrl ? `<button type="button" class="pay-chip" onclick="openPay(event, '${esc(b.payUrl).replace(/'/g, "&#39;")}')">Pay</button>` : ""}
+      <div class="row-amt">${b.when.toLocaleDateString(undefined,{weekday:"short", month:"short", day:"numeric"})}<small>due ${b.due}</small></div>
     </div>
   `).join("") : `<div class="empty">Due dates will land here</div>`;
+}
+function openPay(event, url) {
+  event.preventDefault();
+  event.stopPropagation();
+  let u = String(url || "").trim();
+  if (!u) return;
+  if (!/^https?:\/\//i.test(u)) u = "https://" + u;
+  window.open(u, "_blank", "noopener");
 }
 function esc(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
