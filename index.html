@@ -74,14 +74,14 @@
       z-index: 0;
       pointer-events: none;
       background:
-        radial-gradient(ellipse 70% 42% at 12% calc(6% + 100px), rgba(22, 74, 122, .16), transparent 62%),
-        radial-gradient(ellipse 55% 36% at 90% calc(14% + 100px), rgba(198, 41, 221, .10), transparent 60%),
+        radial-gradient(ellipse 95% 56% at 15% calc(12% + 100px), rgba(22, 74, 122, .13), transparent 70%),
+        radial-gradient(ellipse 82% 50% at 88% calc(21% + 100px), rgba(198, 41, 221, .085), transparent 68%),
         var(--paper);
     }
     html[data-theme="dark"] .bg-glow {
       background:
-        radial-gradient(ellipse 70% 42% at 12% calc(6% + 100px), rgba(22, 74, 122, .12), transparent 62%),
-        radial-gradient(ellipse 55% 36% at 90% calc(14% + 100px), rgba(198, 41, 221, .08), transparent 60%),
+        radial-gradient(ellipse 95% 56% at 15% calc(12% + 100px), rgba(22, 74, 122, .10), transparent 70%),
+        radial-gradient(ellipse 82% 50% at 88% calc(21% + 100px), rgba(198, 41, 221, .065), transparent 68%),
         #000000;
     }
     .topbar {
@@ -217,7 +217,7 @@
     }
     html[data-theme="dark"] .pay-chip { background: #C629DD; }
     textarea.notes {
-      width: 100%; min-height: 88px; resize: vertical;
+      width: 100%; min-height: 160px; resize: vertical;
     }
     .metric .lbl { font-size: 11px; color: var(--mute); letter-spacing: .08em; text-transform: uppercase; text-align: center; justify-content: center; }
     .metric .num { font-size: 20px; font-weight: 600; letter-spacing: -0.03em; margin-top: 4px; font-variant-numeric: tabular-nums; text-align: center; }
@@ -225,6 +225,11 @@
     .section-h { display: flex; align-items: baseline; justify-content: space-between; margin: 0 4px 10px; }
     .section-h h2 { margin: 0; font-size: 20px; letter-spacing: -0.03em; font-weight: 600; }
     .linkish { border: 0; background: none; color: var(--blue-2); font: 500 14px Inter, sans-serif; }
+    #upcoming.group, #billList.group, #payList.group, #hoursList.group {
+      background: transparent;
+      border-color: transparent;
+      box-shadow: none;
+    }
     .group {
       background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
       border: 0.75px solid rgba(255,255,255,.14);
@@ -240,6 +245,31 @@
       text-align: left; color: inherit; font: inherit;
     }
     .row:last-child { border-bottom: 0; }
+    .swipe-row {
+      position: relative;
+      overflow: hidden;
+      background: transparent;
+    }
+    .swipe-row + .swipe-row .row { border-top: 0; }
+    .swipe-back {
+      position: absolute; top: 50%; right: 14px;
+      width: 60px; height: 60px; margin-top: -30px;
+      border: 0; border-radius: 50%; padding: 0;
+      background: #FF3B30; color: #fff;
+      display: grid; place-items: center;
+      z-index: 0;
+      box-shadow: 0 6px 16px rgba(255,59,48,.35);
+    }
+    .swipe-back svg { width: 28px; height: 28px; display: block; }
+    .swipe-front {
+      position: relative; z-index: 1;
+      background: var(--paper-2);
+      transition: transform .18s ease;
+      will-change: transform;
+    }
+    html[data-theme="dark"] .swipe-front { background: #1C1C1E; }
+    .swipe-row.open .swipe-front { transform: translateX(-88px); }
+    .swipe-row.dragging .swipe-front { transition: none; }
     .avatar {
       width: 38px; height: 38px; border-radius: 12px;
       display: grid; place-items: center; flex: 0 0 38px;
@@ -279,7 +309,8 @@
     }
     .grab { width: 36px; height: 4px; background: #D6D1C8; border-radius: 99px; margin: 6px auto 14px; }
     .sheet h3 { margin: 0 0 14px; font-size: 22px; letter-spacing: -0.03em; }
-    label { display: block; font-size: 12px; color: var(--mute); margin: 12px 0 6px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: var(--ink-2); margin: 12px 0 6px; }
+    html[data-theme="dark"] label { color: #D8DCE4; }
     input, select {
       width: 100%; background: var(--paper); border: 1px solid var(--line);
       border-radius: 14px; padding: 13px 14px;
@@ -288,6 +319,16 @@
     input:focus, select:focus { border-color: var(--blue); background: #fff; }
     .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .sheet-actions { display: flex; gap: 8px; margin-top: 18px; }
+    body.page-editor #sheet .sheet-actions {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 12px 18px calc(16px + var(--safe-b));
+      background: var(--paper);
+      z-index: 16;
+    }
+    body.page-editor #sheet { padding-bottom: 96px; }
     .btn { flex: 1; border: 0; border-radius: 999px; padding: 14px 16px; font: 600 15px Inter, sans-serif; }
     .btn.primary { background: var(--ink); color: #fff; }
     .btn.quiet { background: var(--paper-2); color: var(--ink); }
@@ -854,7 +895,7 @@
         <textarea class="notes" id="fNotes" placeholder="Account hint, login reminder…"></textarea>
       </div>
       <div class="sheet-actions">
-        <button type="button" class="btn danger" id="deleteBtn" style="display:none" onclick="deleteItem()">Delete</button>
+        <button type="button" class="btn quiet" onclick="goBack()">Cancel</button>
         <button type="submit" class="btn primary">Save</button>
       </div>
     </form>
@@ -876,7 +917,7 @@
       <p id="confirmText">This action can’t be undone.</p>
       <div class="confirm-actions">
         <button type="button" class="confirm-cancel" onclick="closeDeleteConfirm()">Cancel</button>
-        <button type="button" class="confirm-delete" onclick="confirmDelete()">Delete</button>
+        <button type="button" class="confirm-delete" onclick="confirmDelete()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.8 7h14.4"/><path d="M9.2 7V5.4c0-.8.6-1.4 1.4-1.4h2.8c.8 0 1.4.6 1.4 1.4V7"/><path d="M7.2 7l.7 12.2c.1.9.8 1.6 1.7 1.6h4.8c.9 0 1.6-.7 1.7-1.6L16.8 7"/><path d="M10.2 11v6M13.8 11v6"/></svg></button>
       </div>
     </div>
   </div>
@@ -999,9 +1040,11 @@ function iconFor(name, kind) {
     health: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.2S4.2 15.7 4.2 9.5A4.1 4.1 0 0 1 12 7.6a4.1 4.1 0 0 1 7.8 1.9c0 6.2-7.8 10.7-7.8 10.7Z"/><path d="M8.8 12h2l1-2.2 1.4 4.4 1-2.2h1.9"/></svg>',
     gym: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"/></svg>',
     media: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="m10 9 5 3-5 3V9Z"/></svg>',
-    document: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.8h8l4 4v12.4H6z"/><path d="M14 3.8v4h4M9 12h6M9 15.5h6"/></svg>'
+    document: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.8h8l4 4v12.4H6z"/><path d="M14 3.8v4h4M9 12h6M9 15.5h6"/></svg>',
+    card: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2.2"/><path d="M3 10h18"/><path d="M7 15h3.2"/><path d="M16.2 15h2.2"/></svg>'
   };
   if (kind === "pay") return icons.pay;
+  if (/card|visa|mastercard|amex|discover|credit/.test(s)) return icons.card;
   if (/rent|mortgage|home|apt|apartment/.test(s)) return icons.home;
   if (/car|auto|truck|vehicle/.test(s)) return icons.car;
   if (/insur/.test(s)) return icons.shield;
@@ -1107,7 +1150,6 @@ function openSheet(kind, item) {
   document.getElementById("fPayUrl").value = item?.payUrl || "";
   document.getElementById("fNotes").value = item?.notes || "";
   document.getElementById("billExtras").style.display = isBill ? "block" : "none";
-  document.getElementById("deleteBtn").style.display = item ? "block" : "none";
   const sel = document.getElementById("fFreq");
   const list = isBill ? BILL_FREQS : PAY_FREQS;
   sel.innerHTML = list.map(k => `<option value="${k}">${FREQ[k].label}</option>`).join("");
@@ -1152,16 +1194,36 @@ function deleteItem() {
     item ? `Delete “${item.name}”? This action can’t be undone.` : "This action can’t be undone.";
   document.getElementById("confirmBg").classList.add("show");
 }
+let pendingDelete = null;
+function swipeDelete(kind, id) {
+  pendingDelete = { kind, id };
+  let name = "";
+  if (kind === "hours") {
+    const h = (store.hours || []).find(x => x.id === id);
+    name = h ? h.date : "this day";
+  } else {
+    const col = kind === "bill" ? store.bills : store.pays;
+    const item = col.find(x => x.id === id);
+    name = item ? item.name : "this item";
+  }
+  document.getElementById("confirmText").textContent = `Delete “${name}”? This action can’t be undone.`;
+  document.getElementById("confirmBg").classList.add("show");
+}
 function closeDeleteConfirm() {
   document.getElementById("confirmBg").classList.remove("show");
+  pendingDelete = null;
 }
 function confirmDelete() {
-  const kind = document.getElementById("editKind").value;
-  const id = document.getElementById("editId").value;
-  if (kind === "bill") store.bills = store.bills.filter(b => b.id !== id);
+  const kind = pendingDelete?.kind || document.getElementById("editKind").value;
+  const id = pendingDelete?.id || document.getElementById("editId").value;
+  if (kind === "hours") store.hours = (store.hours || []).filter(h => h.id !== id);
+  else if (kind === "bill") store.bills = store.bills.filter(b => b.id !== id);
   else store.pays = store.pays.filter(p => p.id !== id);
+  pendingDelete = null;
   closeDeleteConfirm();
-  persist(); goHome(); render();
+  persist();
+  if (document.getElementById("editId").value === id) goHome();
+  render();
 }
 function applyTheme() {
   const dark = store.theme === "dark";
@@ -1406,14 +1468,17 @@ function renderHours(bills) {
     " Regular rate. Week is Sunday–Saturday.";
   const sorted = [...hrs].sort((a,b) => b.date.localeCompare(a.date));
   listEl.innerHTML = sorted.length ? sorted.map(h => `
-    <div class="row">
-      <div class="avatar">${iconFor("pay","pay")}</div>
-      <div class="row-main">
-        <div class="row-title">${esc(h.date)} · ${esc(ownerLabel(h.owner))}${h.kind && h.kind !== "normal" ? `<span class="chip">${esc(kindLabel(h.kind))}</span>` : ""}</div>
-        <div class="row-sub">${h.kind === "fmla" ? "0 hours · $0" : `${h.reg||0} reg · ${h.ot||0} OT · ${h.dt||0} DT · ${h.tt||0} TT`}</div>
-      </div>
-      <div class="row-amt">${money(hoursPay(h))}
-        <small><button class="linkish" onclick="deleteHours('${h.id}')">Delete</button></small>
+    <div class="swipe-row" data-kind="hours" data-id="${h.id}">
+      <button type="button" class="swipe-back" aria-label="Delete" onclick="event.stopPropagation(); swipeDelete('hours','${h.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.8 7h14.4"/><path d="M9.2 7V5.4c0-.8.6-1.4 1.4-1.4h2.8c.8 0 1.4.6 1.4 1.4V7"/><path d="M7.2 7l.7 12.2c.1.9.8 1.6 1.7 1.6h4.8c.9 0 1.6-.7 1.7-1.6L16.8 7"/><path d="M10.2 11v6M13.8 11v6"/></svg></button>
+      <div class="swipe-front">
+        <div class="row">
+          <div class="avatar">${iconFor("pay","pay")}</div>
+          <div class="row-main">
+            <div class="row-title">${esc(h.date)} · ${esc(ownerLabel(h.owner))}${h.kind && h.kind !== "normal" ? `<span class="chip">${esc(kindLabel(h.kind))}</span>` : ""}</div>
+            <div class="row-sub">${h.kind === "fmla" ? "0 hours · $0" : `${h.reg||0} reg · ${h.ot||0} OT · ${h.dt||0} DT · ${h.tt||0} TT`}</div>
+          </div>
+          <div class="row-amt">${money(hoursPay(h))}</div>
+        </div>
       </div>
     </div>
   `).join("") : `<div class="empty">No hour entries yet</div>`;
@@ -1444,14 +1509,19 @@ function render() {
   renderHours(bills);
 
   document.getElementById("payList").innerHTML = pays.length ? pays.map(p => `
-    <button class="row" onclick='openSheet("pay", ${JSON.stringify(p)})'>
-      <div class="avatar">${iconFor(p.name,"pay")}</div>
-      <div class="row-main">
-        <div class="row-title">${esc(p.name)}</div>
-        <div class="row-sub">${FREQ[p.freq].label} · ${esc(ownerLabel(p.owner))}</div>
+    <div class="swipe-row" data-kind="pay" data-id="${p.id}">
+      <button type="button" class="swipe-back" aria-label="Delete" onclick="event.stopPropagation(); swipeDelete('pay','${p.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.8 7h14.4"/><path d="M9.2 7V5.4c0-.8.6-1.4 1.4-1.4h2.8c.8 0 1.4.6 1.4 1.4V7"/><path d="M7.2 7l.7 12.2c.1.9.8 1.6 1.7 1.6h4.8c.9 0 1.6-.7 1.7-1.6L16.8 7"/><path d="M10.2 11v6M13.8 11v6"/></svg></button>
+      <div class="swipe-front" onclick='if(!window._swiping) openSheet("pay", ${JSON.stringify(p)})'>
+        <div class="row">
+          <div class="avatar">${iconFor(p.name,"pay")}</div>
+          <div class="row-main">
+            <div class="row-title">${esc(p.name)}</div>
+            <div class="row-sub">${FREQ[p.freq].label} · ${esc(ownerLabel(p.owner))}</div>
+          </div>
+          <div class="row-amt">${money(p.amount)}<small>${money(byPeriod(annual(p)))} / ${periodWord()}</small></div>
+        </div>
       </div>
-      <div class="row-amt">${money(p.amount)}<small>${money(byPeriod(annual(p)))} / ${periodWord()}</small></div>
-    </button>
+    </div>
   `).join("") : `<div class="empty">No paychecks in this view</div>`;
 
   const sorted = [...bills].sort((a,b) => (a.due||99) - (b.due||99));
@@ -1464,15 +1534,20 @@ function render() {
       ? `<button type="button" class="pay-chip" onclick="openPay(event, '${esc(b.payUrl).replace(/'/g, "&#39;")}')">Pay</button>`
       : "";
     return `
-    <div class="row" role="button" tabindex="0" onclick="openSheet('bill', store.bills.find(x=>x.id==='${b.id}'))">
-      <div class="avatar">${iconFor(b.name,"bill")}</div>
-      <div class="row-main">
-        <div class="row-title">${esc(b.name)}${b.type==="sinking" ? '<span class="chip">sinking</span>' : ""}${b.owner==="shared" && who==="all" ? '<span class="chip">shared</span>' : ""}</div>
-        <div class="row-sub">${money(b.amount)} · ${FREQ[b.freq].label} · ${esc(ownerLabel(b.owner))}</div>
-        ${b.notes ? `<div class="row-sub">${esc(b.notes)}</div>` : ""}
+    <div class="swipe-row" data-kind="bill" data-id="${b.id}">
+      <button type="button" class="swipe-back" aria-label="Delete" onclick="event.stopPropagation(); swipeDelete('bill','${b.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.8 7h14.4"/><path d="M9.2 7V5.4c0-.8.6-1.4 1.4-1.4h2.8c.8 0 1.4.6 1.4 1.4V7"/><path d="M7.2 7l.7 12.2c.1.9.8 1.6 1.7 1.6h4.8c.9 0 1.6-.7 1.7-1.6L16.8 7"/><path d="M10.2 11v6M13.8 11v6"/></svg></button>
+      <div class="swipe-front" onclick="if(!window._swiping) openSheet('bill', store.bills.find(x=>x.id==='${b.id}'))">
+        <div class="row">
+          <div class="avatar">${iconFor(b.name,"bill")}</div>
+          <div class="row-main">
+            <div class="row-title">${esc(b.name)}${b.type==="sinking" ? '<span class="chip">sinking</span>' : ""}${b.owner==="shared" && who==="all" ? '<span class="chip">shared</span>' : ""}</div>
+            <div class="row-sub">${money(b.amount)} · ${FREQ[b.freq].label} · ${esc(ownerLabel(b.owner))}</div>
+            ${b.notes ? `<div class="row-sub">${esc(b.notes)}</div>` : ""}
+          </div>
+          ${pay}
+          <div class="row-amt">${dateTxt}<small>${b.due ? "due " + b.due : ""}</small></div>
+        </div>
       </div>
-      ${pay}
-      <div class="row-amt">${dateTxt}<small>${b.due ? "due " + b.due : ""}</small></div>
     </div>`;
   }).join("") : `<div class="empty">No bills in this view</div>`;
 
@@ -1482,16 +1557,73 @@ function render() {
     .sort((a,b) => a.when - b.when);
 
   document.getElementById("upcoming").innerHTML = upcoming.length ? upcoming.map(b => `
-    <div class="row" role="button" tabindex="0" onclick="openSheet('bill', store.bills.find(x=>x.id==='${b.id}'))">
-      <div class="avatar">${iconFor(b.name,"bill")}</div>
-      <div class="row-main">
-        <div class="row-title">${esc(b.name)}</div>
-        <div class="row-sub"><span class="due-dot"></span>${money(b.amount)} · ${esc(ownerLabel(b.owner))}</div>
+    <div class="swipe-row" data-kind="bill" data-id="${b.id}">
+      <button type="button" class="swipe-back" aria-label="Delete" onclick="event.stopPropagation(); swipeDelete('bill','${b.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.8 7h14.4"/><path d="M9.2 7V5.4c0-.8.6-1.4 1.4-1.4h2.8c.8 0 1.4.6 1.4 1.4V7"/><path d="M7.2 7l.7 12.2c.1.9.8 1.6 1.7 1.6h4.8c.9 0 1.6-.7 1.7-1.6L16.8 7"/><path d="M10.2 11v6M13.8 11v6"/></svg></button>
+      <div class="swipe-front" onclick="if(!window._swiping) openSheet('bill', store.bills.find(x=>x.id==='${b.id}'))">
+        <div class="row">
+          <div class="avatar">${iconFor(b.name,"bill")}</div>
+          <div class="row-main">
+            <div class="row-title">${esc(b.name)}</div>
+            <div class="row-sub"><span class="due-dot"></span>${money(b.amount)} · ${esc(ownerLabel(b.owner))}</div>
+          </div>
+          ${b.payUrl ? `<button type="button" class="pay-chip" onclick="openPay(event, '${esc(b.payUrl).replace(/'/g, "&#39;")}')">Pay</button>` : ""}
+          <div class="row-amt">${b.when.toLocaleDateString(undefined,{weekday:"short", month:"short", day:"numeric"})}<small>due ${b.due}</small></div>
+        </div>
       </div>
-      ${b.payUrl ? `<button type="button" class="pay-chip" onclick="openPay(event, '${esc(b.payUrl).replace(/'/g, "&#39;")}')">Pay</button>` : ""}
-      <div class="row-amt">${b.when.toLocaleDateString(undefined,{weekday:"short", month:"short", day:"numeric"})}<small>due ${b.due}</small></div>
     </div>
   `).join("") : `<div class="empty">Due dates will land here</div>`;
+  bindSwipe();
+}
+function bindSwipe() {
+  document.querySelectorAll(".swipe-row").forEach(row => {
+    const front = row.querySelector(".swipe-front");
+    if (!front || front._swipe) return;
+    front._swipe = true;
+    let x0 = 0, y0 = 0, dx = 0, axis = null, open = false;
+    const width = 88;
+    function setX(x) {
+      front.style.transform = `translateX(${x}px)`;
+    }
+    front.addEventListener("touchstart", e => {
+      const t = e.changedTouches[0];
+      x0 = t.clientX; y0 = t.clientY; dx = 0; axis = null;
+      open = row.classList.contains("open");
+      row.classList.add("dragging");
+      document.querySelectorAll(".swipe-row.open").forEach(o => {
+        if (o !== row) { o.classList.remove("open"); o.querySelector(".swipe-front").style.transform = ""; }
+      });
+    }, { passive: true });
+    front.addEventListener("touchmove", e => {
+      const t = e.changedTouches[0];
+      const mx = t.clientX - x0, my = t.clientY - y0;
+      if (axis == null && Math.abs(mx) + Math.abs(my) > 8) axis = Math.abs(mx) > Math.abs(my) ? "x" : "y";
+      if (axis !== "x") return;
+      dx = mx;
+      let x = (open ? -width : 0) + dx;
+      if (x > 0) x *= 0.2;
+      if (x < -width - 40) x = -width - 40 + (x + width + 40) * 0.2;
+      window._swiping = true;
+      setX(x);
+    }, { passive: true });
+    front.addEventListener("touchend", () => {
+      row.classList.remove("dragging");
+      const start = open ? -width : 0;
+      const end = start + dx;
+      if (axis === "x" && end < -width - 70) {
+        row.classList.remove("open");
+        front.style.transform = "";
+        swipeDelete(row.dataset.kind, row.dataset.id);
+      } else if (axis === "x" && end < -width * 0.45) {
+        row.classList.add("open");
+        front.style.transform = "";
+      } else {
+        row.classList.remove("open");
+        front.style.transform = "";
+      }
+      setTimeout(() => { window._swiping = false; }, 80);
+      axis = null;
+    });
+  });
 }
 function openPay(event, url) {
   event.preventDefault();
