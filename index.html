@@ -436,6 +436,48 @@
       box-shadow: inset 0 1px 0 rgba(255,255,255,.34), 0 4px 12px rgba(126,25,147,.18);
     }
 
+
+    /* Final visual corrections */
+    /* The people selector itself stays simple; only the selected segment gets Liquid Glass. */
+    .who {
+      background: var(--card);
+      border: 0;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      box-shadow: 0 1px 0 var(--line);
+    }
+    .who button {
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+    }
+    .who button.on {
+      background: linear-gradient(180deg, rgba(198,41,221,.72), rgba(150,27,174,.54));
+      color: #fff;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.34),
+        0 4px 12px rgba(126,25,147,.18);
+      backdrop-filter: blur(22px) saturate(180%);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+    }
+
+    /* White controls always use black text, including dark mode. */
+    .fab.ghost,
+    .btn.quiet,
+    .seg button.on {
+      color: #000 !important;
+    }
+    .fab.ghost {
+      background: #fff !important;
+      box-shadow: 0 8px 20px rgba(18,21,26,.10);
+    }
+    .btn.quiet {
+      background: #fff !important;
+    }
+    .seg button.on {
+      background: #fff !important;
+    }
+
   </style>
 </head>
 <body>
@@ -622,7 +664,7 @@ const FREQ = {
 };
 const PAY_FREQS = ["weekly","biweekly","semimonthly","monthly"];
 const BILL_FREQS = ["weekly","biweekly","monthly","quarterly","yearly"];
-const DB_NAME = "ledger-db";
+const DB_NAME = "bills-db";
 const DB_STORE = "state";
 
 let period = "week";
@@ -663,7 +705,7 @@ async function idbWrite(data) {
   });
 }
 function lsFallbackWrite() {
-  localStorage.setItem("ledger_state", JSON.stringify(store));
+  localStorage.setItem("bills_state", JSON.stringify(store));
 }
 async function persist() {
   try { await idbWrite(store); }
@@ -674,12 +716,12 @@ async function load() {
   let data = null;
   try { data = await idbRead(); } catch (e) {}
   if (!data) {
-    const raw = localStorage.getItem("ledger_state");
+    const raw = localStorage.getItem("bills_state");
     if (raw) data = JSON.parse(raw);
   }
   if (!data) {
-    const pays = JSON.parse(localStorage.getItem("ledger_pays") || "[]");
-    const bills = JSON.parse(localStorage.getItem("ledger_bills") || "[]");
+    const pays = JSON.parse(localStorage.getItem("bills_pays") || "[]");
+    const bills = JSON.parse(localStorage.getItem("bills_bills") || "[]");
     data = {
       people: { p1: "You", p2: "Partner" },
       pays: pays.map(p => ({ ...p, owner: p.owner || "p1" })),
