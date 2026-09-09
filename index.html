@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark" style="background-color:#000000">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#000000" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="supported-color-schemes" content="dark light" />
   <meta name="apple-mobile-web-app-title" content=" " />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
@@ -14,6 +17,12 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
   <title> </title>
+  <script>
+    (function () {
+      document.documentElement.style.backgroundColor = "#000000";
+      document.documentElement.style.colorScheme = "dark";
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -56,9 +65,22 @@
       color: var(--ink);
       font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
       min-height: 100%;
+      min-height: 100dvh;
+      min-height: -webkit-fill-available;
     }
     html {
-      background-color: var(--paper);
+      background-color: #000000;
+      color-scheme: dark;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+    html[data-theme="light"] {
+      background-color: #F3F1EC;
+      color-scheme: light;
+    }
+    html[data-theme="dark"] {
+      background-color: #000000;
+      color-scheme: dark;
     }
     body {
       padding: calc(18px + var(--safe-t)) 18px calc(96px + var(--safe-b));
@@ -217,13 +239,19 @@
     }
     html[data-theme="dark"] .pay-chip { background: #C629DD; }
     textarea.notes {
-      width: 100%; min-height: 160px; resize: vertical;
+      width: 100%;
+      min-height: 280px;
+      height: 280px;
+      resize: vertical;
+      font-size: 16px !important;
+      line-height: 1.45;
+      padding: 14px;
     }
     .metric .lbl { font-size: 11px; color: var(--mute); letter-spacing: .08em; text-transform: uppercase; text-align: center; justify-content: center; }
     .metric .num { font-size: 20px; font-weight: 600; letter-spacing: -0.03em; margin-top: 4px; font-variant-numeric: tabular-nums; text-align: center; }
     .section { margin-top: 26px; }
     .section-h { display: flex; align-items: baseline; justify-content: space-between; margin: 0 4px 10px; }
-    .section-h h2 { margin: 0; font-size: 20px; letter-spacing: -0.03em; font-weight: 600; }
+    .section-h h2 { margin: 0; font-size: 20px; letter-spacing: -0.03em; font-weight: 600; color: var(--ink); }
     .linkish { border: 0; background: none; color: var(--blue-2); font: 500 14px Inter, sans-serif; }
     #upcoming.group, #billList.group, #payList.group, #hoursList.group {
       background: transparent;
@@ -251,25 +279,36 @@
       background: transparent;
     }
     .swipe-row + .swipe-row .row { border-top: 0; }
-    .swipe-back {
-      position: absolute; top: 50%; right: 14px;
-      width: 60px; height: 60px; margin-top: -30px;
-      border: 0; border-radius: 50%; padding: 0;
-      background: #FF3B30; color: #fff;
-      display: grid; place-items: center;
-      z-index: 0;
-      box-shadow: 0 6px 16px rgba(255,59,48,.35);
-    }
-    .swipe-back svg { width: 28px; height: 28px; display: block; }
-    .swipe-front {
-      position: relative; z-index: 1;
-      background: var(--paper-2);
+    .swipe-track {
+      display: flex;
+      align-items: stretch;
+      width: 100%;
       transition: transform .18s ease;
       will-change: transform;
     }
+    .swipe-row.dragging .swipe-track { transition: none; }
+    .swipe-row.open .swipe-track { transform: translateX(-88px); }
+    .swipe-front {
+      flex: 0 0 100%;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      background: var(--paper-2);
+    }
     html[data-theme="dark"] .swipe-front { background: #1C1C1E; }
-    .swipe-row.open .swipe-front { transform: translateX(-88px); }
-    .swipe-row.dragging .swipe-front { transition: none; }
+    .swipe-back {
+      flex: 0 0 88px;
+      width: 88px;
+      border: 0;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      color: #FF453A;
+      display: grid;
+      place-items: center;
+      box-shadow: none;
+    }
+    .swipe-back svg { width: 28px; height: 28px; display: block; }
     .avatar {
       width: 38px; height: 38px; border-radius: 12px;
       display: grid; place-items: center; flex: 0 0 38px;
@@ -309,12 +348,26 @@
     }
     .grab { width: 36px; height: 4px; background: #D6D1C8; border-radius: 99px; margin: 6px auto 14px; }
     .sheet h3 { margin: 0 0 14px; font-size: 22px; letter-spacing: -0.03em; }
-    label { display: block; font-size: 13px; font-weight: 600; color: var(--ink-2); margin: 12px 0 6px; }
-    html[data-theme="dark"] label { color: #D8DCE4; }
-    input, select {
+    label, .field-label {
+      display: block !important;
+      font-size: 13px !important;
+      line-height: 1.3 !important;
+      font-weight: 600 !important;
+      color: var(--ink) !important;
+      margin: 14px 0 6px !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      height: auto !important;
+      overflow: visible !important;
+      position: relative !important;
+    }
+    html[data-theme="dark"] label, html[data-theme="dark"] .field-label { color: #F3F1EC !important; }
+    html[data-theme="light"] label, html[data-theme="light"] .field-label { color: #12151A !important; }
+    input, select, textarea {
       width: 100%; background: var(--paper); border: 1px solid var(--line);
       border-radius: 14px; padding: 13px 14px;
       font: 500 16px Inter, sans-serif; color: var(--ink); outline: none; appearance: none;
+      font-size: 16px !important;
     }
     input:focus, select:focus { border-color: var(--blue); background: #fff; }
     .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -499,14 +552,19 @@
     .confirm p { margin: 8px 0 20px; color: var(--mute); font-size: 14px; line-height: 1.45; }
     .confirm-actions { display:flex; gap:8px; }
     .confirm-actions button {
-      flex:1; min-height:46px; border:0; border-radius:999px;
-      font:600 15px Inter,sans-serif;
+      flex:1;
+      min-height:44px;
+      height: 44px;
+      border:0;
+      border-radius:12px;
+      font:600 16px Inter,sans-serif;
     }
+    .confirm-actions svg { display: none !important; }
     .confirm-cancel {
       background: rgba(255,255,255,.42); color: var(--ink);
       border: 1px solid rgba(255,255,255,.30) !important;
     }
-    .confirm-delete { background: rgba(226,75,75,.12); color: var(--red); }
+    .confirm-delete { background: transparent; color: var(--red); box-shadow: none; }
 
     /* Light/Dark Liquid Glass segmented slider */
     .theme-row {
@@ -647,9 +705,110 @@
       color: #F3F1EC !important;
     }
 
+
+    /* Upcoming bills = individual Liquid Glass tiles */
+    #upcoming.group,
+    #billList.group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      overflow: visible;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+    #upcoming .swipe-row,
+    #billList .swipe-row {
+      border-radius: 18px;
+      overflow: hidden;
+      background: transparent;
+      border: 0;
+    }
+    #upcoming .swipe-front,
+    #billList .swipe-front {
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.05));
+      border: 0.75px solid rgba(255,255,255,.16);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.22);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+    }
+    html[data-theme="light"] #upcoming .swipe-front,
+    html[data-theme="light"] #billList .swipe-front {
+      background: linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.70));
+      border-color: rgba(18,21,26,.10);
+    }
+    #upcoming .row,
+    #billList .row {
+      border-bottom: 0;
+      padding: 16px 14px 15px;
+    }
+    #upcoming .empty,
+    #billList .empty {
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      border: 0.75px solid rgba(255,255,255,.14);
+      border-radius: 18px;
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+    }
+    html[data-theme="light"] #upcoming .empty,
+    html[data-theme="light"] #billList .empty {
+      background: linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.70));
+      border-color: rgba(18,21,26,.10);
+    }
+
+    /* Keep page background painted under the Dynamic Island */
+    .status-bleed {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: env(safe-area-inset-top, 0px);
+      background: var(--paper);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+
+    /* Notes size + no iOS focus zoom */
+    input, select, textarea, textarea.notes {
+      font-size: 16px !important;
+      line-height: 1.4;
+    }
+    textarea.notes {
+      min-height: 280px !important;
+      height: 280px;
+    }
+
+    /* Delete controls: icon only, no red wash on swipe */
+    .swipe-back,
+    .btn.danger {
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+    .swipe-back { color: #FF453A !important; }
+    .confirm-cancel {
+      background: rgba(255,255,255,.14) !important;
+      color: var(--ink) !important;
+    }
+    html[data-theme="light"] .confirm-cancel {
+      background: rgba(18,21,26,.08) !important;
+      color: #12151A !important;
+    }
+    .confirm-delete {
+      background: rgba(226,75,75,.16) !important;
+      color: #FF8A80 !important;
+      box-shadow: none !important;
+    }
+    html[data-theme="light"] .confirm-delete {
+      background: #F8E4E4 !important;
+      color: #C62828 !important;
+    }
+
   </style>
 </head>
 <body>
+  <div class="status-bleed" aria-hidden="true"></div>
   <div class="bg-glow" aria-hidden="true"></div>
   <div class="topbar">
     <div class="nav-cluster" id="homeNav">
@@ -711,8 +870,8 @@
     </button>
   </div>
 
-  <section class="section">
-    <div class="section-h"><h2>Upcoming</h2></div>
+  <section class="section" id="upcomingSection">
+    <div class="section-h"><h2 id="upcomingHeading">Upcoming</h2></div>
     <div class="group" id="upcoming"></div>
   </section>
 
@@ -860,38 +1019,38 @@
       <h3 id="sheetTitle" style="margin:0 0 8px;font-size:28px;letter-spacing:-0.04em">Add bill</h3>
       <input type="hidden" id="editId" />
       <input type="hidden" id="editKind" />
-      <label>Name</label>
+      <label class="field-label" for="fName">Name</label>
       <input id="fName" required placeholder="Rent, paycheck, phone…" />
       <div class="two">
         <div>
-          <label>Amount</label>
+          <label class="field-label" for="fAmt">Amount</label>
           <input id="fAmt" required type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" />
         </div>
         <div>
-          <label>Frequency</label>
+          <label class="field-label" for="fFreq">Frequency</label>
           <select id="fFreq"></select>
         </div>
       </div>
-      <label>Belongs to</label>
+      <label class="field-label" for="fOwner">Belongs to</label>
       <select id="fOwner"></select>
       <div id="billExtras">
         <div class="two">
           <div>
-            <label>Due day</label>
+            <label class="field-label" for="fDue">Due day</label>
             <input id="fDue" type="number" min="1" max="31" placeholder="1" />
           </div>
           <div>
-            <label>Type</label>
+            <label class="field-label" for="fType">Type</label>
             <select id="fType">
               <option value="fixed">Fixed</option>
               <option value="sinking">Sinking fund</option>
             </select>
           </div>
         </div>
-        <label>Pay website</label>
+        <label class="field-label" for="fPayUrl">Pay website</label>
         <input id="fPayUrl" type="url" inputmode="url" placeholder="https://…" autocomplete="off" />
         <p class="note">Opens this site when you tap Pay on the bill.</p>
-        <label>Notes</label>
+        <label class="field-label" for="fNotes">Notes</label>
         <textarea class="notes" id="fNotes" placeholder="Account hint, login reminder…"></textarea>
       </div>
       <div class="sheet-actions">
@@ -916,8 +1075,8 @@
       <h3 id="confirmTitle">Delete this item?</h3>
       <p id="confirmText">This action can’t be undone.</p>
       <div class="confirm-actions">
-        <button type="button" class="confirm-cancel" onclick="closeDeleteConfirm()">Cancel</button>
-        <button type="button" class="confirm-delete" onclick="confirmDelete()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.8 7h14.4"/><path d="M9.2 7V5.4c0-.8.6-1.4 1.4-1.4h2.8c.8 0 1.4.6 1.4 1.4V7"/><path d="M7.2 7l.7 12.2c.1.9.8 1.6 1.7 1.6h4.8c.9 0 1.6-.7 1.7-1.6L16.8 7"/><path d="M10.2 11v6M13.8 11v6"/></svg></button>
+        <button type="button" class="confirm-cancel" onclick="closeDeleteConfirm()">No</button>
+        <button type="button" class="confirm-delete" onclick="confirmDelete()">Yes</button>
       </div>
     </div>
   </div>
@@ -1228,7 +1387,12 @@ function confirmDelete() {
 function applyTheme() {
   const dark = store.theme === "dark";
   document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
-  document.querySelector('meta[name="theme-color"]').setAttribute("content", dark ? "#000000" : "#F3F1EC");
+  document.documentElement.style.backgroundColor = dark ? "#000000" : "#F3F1EC";
+  document.documentElement.style.colorScheme = dark ? "dark" : "light";
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeMeta) themeMeta.setAttribute("content", dark ? "#000000" : "#F3F1EC");
+  const schemeMeta = document.querySelector('meta[name="color-scheme"]');
+  if (schemeMeta) schemeMeta.setAttribute("content", dark ? "dark" : "light");
   document.getElementById("themeLight").classList.toggle("on", !dark);
   document.getElementById("themeDark").classList.toggle("on", dark);
 }
@@ -1577,12 +1741,24 @@ function render() {
 function bindSwipe() {
   document.querySelectorAll(".swipe-row").forEach(row => {
     const front = row.querySelector(".swipe-front");
-    if (!front || front._swipe) return;
+    const back = row.querySelector(".swipe-back");
+    if (!front || !back || front._swipe) return;
+    let track = row.querySelector(".swipe-track");
+    if (!track) {
+      track = document.createElement("div");
+      track.className = "swipe-track";
+      front.parentNode.insertBefore(track, front);
+      track.appendChild(front);
+      track.appendChild(back);
+    }
     front._swipe = true;
     let x0 = 0, y0 = 0, dx = 0, axis = null, open = false;
     const width = 88;
     function setX(x) {
-      front.style.transform = `translateX(${x}px)`;
+      track.style.transform = `translateX(${x}px)`;
+    }
+    function clearX() {
+      track.style.transform = "";
     }
     front.addEventListener("touchstart", e => {
       const t = e.changedTouches[0];
@@ -1590,7 +1766,11 @@ function bindSwipe() {
       open = row.classList.contains("open");
       row.classList.add("dragging");
       document.querySelectorAll(".swipe-row.open").forEach(o => {
-        if (o !== row) { o.classList.remove("open"); o.querySelector(".swipe-front").style.transform = ""; }
+        if (o !== row) {
+          o.classList.remove("open");
+          const t2 = o.querySelector(".swipe-track");
+          if (t2) t2.style.transform = "";
+        }
       });
     }, { passive: true });
     front.addEventListener("touchmove", e => {
@@ -1611,14 +1791,14 @@ function bindSwipe() {
       const end = start + dx;
       if (axis === "x" && end < -width - 70) {
         row.classList.remove("open");
-        front.style.transform = "";
+        clearX();
         swipeDelete(row.dataset.kind, row.dataset.id);
       } else if (axis === "x" && end < -width * 0.45) {
         row.classList.add("open");
-        front.style.transform = "";
+        clearX();
       } else {
         row.classList.remove("open");
-        front.style.transform = "";
+        clearX();
       }
       setTimeout(() => { window._swiping = false; }, 80);
       axis = null;
