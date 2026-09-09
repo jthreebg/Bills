@@ -1,7 +1,7 @@
 {
-  "name": "Ledger",
-  "short_name": "Ledger",
-  "description": "Personal cashflow — bills, paychecks, leftover",
+  "name": "Bills",
+  "short_name": "Bills",
+  "description": "Household bills and paychecks",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

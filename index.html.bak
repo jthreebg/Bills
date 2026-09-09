@@ -259,183 +259,6 @@
     }
     .toast.show { opacity: 1; }
     #restoreFile { display: none; }
-  
-    /* --- Liquid Glass UI refinement --- */
-    :root {
-      --glass-purple: #C629DD;
-      --glass-purple-soft: rgba(198,41,221,.24);
-      --glass-purple-mid: rgba(198,41,221,.42);
-    }
-    .mark {
-      width: 44px; height: 44px; border-radius: 50%;
-      flex: 0 0 44px;
-      background: transparent;
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.65),
-        0 8px 20px rgba(26,23,72,.12);
-    }
-    .mark img { border-radius: 50%; }
-    .brand { gap: 0; }
-    .glass-btn, .mark { width: 44px; height: 44px; }
-    .glass-btn svg { width: 20px; height: 20px; }
-
-    /* Shared Liquid Glass pill */
-    .who {
-      background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.08)),
-                  rgba(198,41,221,.16);
-      border: 1px solid rgba(198,41,221,.22);
-      backdrop-filter: blur(22px) saturate(180%);
-      -webkit-backdrop-filter: blur(22px) saturate(180%);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.48),
-        inset 0 -1px 0 rgba(255,255,255,.10),
-        0 8px 22px rgba(73,22,87,.10);
-    }
-    .who button { min-height: 34px; }
-    .who button.on {
-      background: linear-gradient(180deg, rgba(198,41,221,.72), rgba(150,27,174,.54));
-      color: #fff;
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.34),
-        0 4px 12px rgba(126,25,147,.18);
-    }
-    html[data-theme="dark"] .who {
-      background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04)),
-                  rgba(198,41,221,.16);
-      border-color: rgba(198,41,221,.28);
-    }
-
-    /* All circular glass controls use one geometry */
-    .glass-btn { flex: 0 0 44px; }
-    .icon-glass {
-      width: 44px; height: 44px; border-radius: 50%; border: 0;
-      display: grid; place-items: center;
-      color: var(--ink); background: linear-gradient(180deg, rgba(255,255,255,.46), rgba(255,255,255,.16));
-      backdrop-filter: blur(22px) saturate(180%);
-      -webkit-backdrop-filter: blur(22px) saturate(180%);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.62), inset 0 -1px 0 rgba(255,255,255,.12), 0 8px 20px rgba(26,23,72,.10);
-      outline: 1px solid rgba(255,255,255,.38);
-      outline-offset: -1px;
-    }
-    html[data-theme="dark"] .icon-glass {
-      color: #F4F1FF;
-      background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.05));
-      outline-color: rgba(255,255,255,.18);
-    }
-
-    /* Consistent modern line icons */
-    .avatar svg { width: 21px; height: 21px; display:block; }
-    .avatar { color: var(--ink-2); }
-
-    /* Inputs/selects share one treatment */
-    input, select {
-      background: rgba(255,255,255,.52);
-      border: 1px solid rgba(18,21,26,.10);
-      color: var(--ink);
-      border-radius: 16px;
-      min-height: 48px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.55);
-      backdrop-filter: blur(16px) saturate(140%);
-      -webkit-backdrop-filter: blur(16px) saturate(140%);
-    }
-    input:focus, select:focus {
-      border-color: rgba(198,41,221,.60);
-      background: rgba(255,255,255,.66);
-      box-shadow: 0 0 0 3px rgba(198,41,221,.12), inset 0 1px 0 rgba(255,255,255,.65);
-    }
-    html[data-theme="dark"] input,
-    html[data-theme="dark"] select {
-      background: rgba(255,255,255,.07);
-      border-color: rgba(255,255,255,.10);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
-    }
-    html[data-theme="dark"] input:focus,
-    html[data-theme="dark"] select:focus {
-      background: rgba(255,255,255,.10);
-      border-color: rgba(198,41,221,.68);
-    }
-
-    /* White buttons always use black text */
-    .btn.quiet, .fab.ghost, .seg button.on { color: #000; }
-    html[data-theme="dark"] .btn.quiet, html[data-theme="dark"] .fab.ghost { color: #000; }
-
-    /* Delete = text only */
-    .btn.danger {
-      background: transparent;
-      color: var(--red);
-      border: 0;
-      box-shadow: none;
-    }
-    .btn.danger:active { background: rgba(226,75,75,.08); }
-
-    /* Liquid Glass confirmation dialog */
-    .confirm-bg {
-      position: fixed; inset: 0; z-index: 60;
-      display: none; align-items: center; justify-content: center;
-      padding: 24px;
-      background: rgba(10,12,18,.42);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-    .confirm-bg.show { display: flex; }
-    .confirm {
-      width: min(360px, 100%);
-      padding: 24px;
-      border-radius: 28px;
-      background: linear-gradient(180deg, rgba(255,255,255,.66), rgba(255,255,255,.38));
-      border: 1px solid rgba(255,255,255,.55);
-      backdrop-filter: blur(30px) saturate(180%);
-      -webkit-backdrop-filter: blur(30px) saturate(180%);
-      box-shadow: 0 24px 70px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.72);
-    }
-    html[data-theme="dark"] .confirm {
-      background: linear-gradient(180deg, rgba(36,40,49,.78), rgba(24,28,35,.72));
-      border-color: rgba(255,255,255,.14);
-      box-shadow: 0 24px 70px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.12);
-    }
-    .confirm h3 { margin: 0; font-size: 21px; letter-spacing: -.03em; }
-    .confirm p { margin: 8px 0 20px; color: var(--mute); font-size: 14px; line-height: 1.45; }
-    .confirm-actions { display:flex; gap:8px; }
-    .confirm-actions button {
-      flex:1; min-height:46px; border:0; border-radius:999px;
-      font:600 15px Inter,sans-serif;
-    }
-    .confirm-cancel {
-      background: rgba(255,255,255,.42); color: var(--ink);
-      border: 1px solid rgba(255,255,255,.30) !important;
-    }
-    .confirm-delete { background: rgba(226,75,75,.12); color: var(--red); }
-
-    /* Light/Dark Liquid Glass segmented slider */
-    .theme-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3px;
-      padding: 3px;
-      margin-top: 4px;
-      border-radius: 999px;
-      background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.08)), rgba(198,41,221,.16);
-      border: 1px solid rgba(198,41,221,.22);
-      backdrop-filter: blur(22px) saturate(180%);
-      -webkit-backdrop-filter: blur(22px) saturate(180%);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.48), 0 8px 22px rgba(73,22,87,.10);
-    }
-    .theme-row button {
-      border: 0;
-      background: transparent;
-      color: var(--mute);
-      border-radius: 999px;
-      padding: 9px 10px;
-      min-height: 36px;
-      font: 600 14px Inter,sans-serif;
-    }
-    .theme-row button.on {
-      border: 0;
-      background: linear-gradient(180deg, rgba(198,41,221,.72), rgba(150,27,174,.54));
-      color: #fff;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.34), 0 4px 12px rgba(126,25,147,.18);
-    }
-
   </style>
 </head>
 <body>
@@ -598,17 +421,6 @@
 
  
 
-  <div class="confirm-bg" id="confirmBg" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
-    <div class="confirm">
-      <h3 id="confirmTitle">Delete this item?</h3>
-      <p id="confirmText">This action can’t be undone.</p>
-      <div class="confirm-actions">
-        <button type="button" class="confirm-cancel" onclick="closeDeleteConfirm()">Cancel</button>
-        <button type="button" class="confirm-delete" onclick="confirmDelete()">Delete</button>
-      </div>
-    </div>
-  </div>
-
   <div class="toast" id="toast"></div>
 
 <script>
@@ -709,36 +521,20 @@ function money(n, compact) {
 }
 function iconFor(name, kind) {
   const s = (name || "").toLowerCase();
-  const icons = {
-    pay: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="6" width="17" height="12" rx="2.5"/><path d="M3.5 9h17"/><circle cx="12" cy="13.5" r="2.1"/></svg>',
-    home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m3.8 10.7 8.2-6.9 8.2 6.9"/><path d="M5.8 9.8v9.2h12.4V9.8"/><path d="M9.5 19v-5h5v5"/></svg>',
-    car: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m5.2 10.2 1.5-4h10.6l1.5 4"/><path d="M4 10.2h16v7.2H4z"/><circle cx="7.5" cy="17.4" r="1.2"/><circle cx="16.5" cy="17.4" r="1.2"/></svg>',
-    shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 19 6v5.2c0 4.3-2.8 7.8-7 9.3-4.2-1.5-7-5-7-9.3V6l7-2.5Z"/><path d="m9.2 12 1.8 1.8 3.9-4"/></svg>',
-    phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3.5" width="10" height="17" rx="2.2"/><path d="M10 6h4M11 17.5h2"/></svg>',
-    wifi: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 9.5a12 12 0 0 1 16 0"/><path d="M7 12.7a7.6 7.6 0 0 1 10 0"/><path d="M10 15.8a3.4 3.4 0 0 1 4 0"/><circle cx="12" cy="19" r=".8" fill="currentColor" stroke="none"/></svg>',
-    electric: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m13.5 2.8-7 11h5.4l-1.2 7.4 7-11h-5.4l1.2-7.4Z"/></svg>',
-    gas: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13.2 3.5c.4 3-2.4 4.2-2.7 6.6-.2 1.5.7 2.6 1.7 3.3.3-1.7 1.7-2.5 1.6-4.5 2.7 2.1 4.2 4.6 3.8 7.1-.5 3.1-3.2 4.9-5.8 4.9-3.7 0-6.4-2.8-6.4-6.2 0-4.2 3.7-6.6 7.8-11.2Z"/><path d="M10.7 16.2c0 1.1.6 1.8 1.6 2.2"/></svg>',
-    water: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5s6 6.2 6 10.5a6 6 0 0 1-12 0c0-4.3 6-10.5 6-10.5Z"/><path d="M9.5 15.5a2.8 2.8 0 0 0 2.5 1.6"/></svg>',
-    cart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h2l1.5 10.5h9.8L19 8H7"/><circle cx="9.5" cy="19" r="1.1"/><circle cx="16.5" cy="19" r="1.1"/></svg>',
-    health: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.2S4.2 15.7 4.2 9.5A4.1 4.1 0 0 1 12 7.6a4.1 4.1 0 0 1 7.8 1.9c0 6.2-7.8 10.7-7.8 10.7Z"/><path d="M8.8 12h2l1-2.2 1.4 4.4 1-2.2h1.9"/></svg>',
-    gym: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"/></svg>',
-    media: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="m10 9 5 3-5 3V9Z"/></svg>',
-    document: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.8h8l4 4v12.4H6z"/><path d="M14 3.8v4h4M9 12h6M9 15.5h6"/></svg>'
-  };
-  if (kind === "pay") return icons.pay;
-  if (/rent|mortgage|home|apt|apartment/.test(s)) return icons.home;
-  if (/car|auto|truck|vehicle/.test(s)) return icons.car;
-  if (/insur/.test(s)) return icons.shield;
-  if (/phone|cell|mobile/.test(s)) return icons.phone;
-  if (/internet|wifi/.test(s)) return icons.wifi;
-  if (/electric|power|utility/.test(s)) return icons.electric;
-  if (/gas/.test(s)) return icons.gas;
-  if (/water/.test(s)) return icons.water;
-  if (/food|groc/.test(s)) return icons.cart;
-  if (/health|doctor|dental/.test(s)) return icons.health;
-  if (/gym|fit/.test(s)) return icons.gym;
-  if (/netflix|hulu|spotify|sub/.test(s)) return icons.media;
-  return icons.document;
+  if (kind === "pay") return "💵";
+  if (/rent|mortgage|home|apt|apartment/.test(s)) return "🏠";
+  if (/car|auto|truck|vehicle/.test(s)) return "🚗";
+  if (/insur/.test(s)) return "🛡";
+  if (/phone|cell|mobile/.test(s)) return "📱";
+  if (/internet|wifi/.test(s)) return "📡";
+  if (/electric|power|utility/.test(s)) return "⚡";
+  if (/gas/.test(s)) return "🔥";
+  if (/water/.test(s)) return "💧";
+  if (/food|groc/.test(s)) return "🛒";
+  if (/health|doctor|dental/.test(s)) return "❤️";
+  if (/gym|fit/.test(s)) return "🏋️";
+  if (/netflix|hulu|spotify|sub/.test(s)) return "🎬";
+  return "📄";
 }
 function ownerLabel(owner) {
   if (owner === "p1") return store.people.p1;
@@ -856,22 +652,8 @@ function saveItem(e) {
 function deleteItem() {
   const kind = document.getElementById("editKind").value;
   const id = document.getElementById("editId").value;
-  if (!id) return;
-  const collection = kind === "bill" ? store.bills : store.pays;
-  const item = collection.find(x => x.id === id);
-  document.getElementById("confirmText").textContent =
-    item ? `Delete “${item.name}”? This action can’t be undone.` : "This action can’t be undone.";
-  document.getElementById("confirmBg").classList.add("show");
-}
-function closeDeleteConfirm() {
-  document.getElementById("confirmBg").classList.remove("show");
-}
-function confirmDelete() {
-  const kind = document.getElementById("editKind").value;
-  const id = document.getElementById("editId").value;
   if (kind === "bill") store.bills = store.bills.filter(b => b.id !== id);
   else store.pays = store.pays.filter(p => p.id !== id);
-  closeDeleteConfirm();
   persist(); goHome(); render();
 }
 function applyTheme() {
@@ -902,7 +684,7 @@ function toast(msg) {
 }
 function backup() {
   const payload = {
-    app: "bills",
+    app: "ledger",
     version: 2,
     exportedAt: new Date().toISOString(),
     people: store.people,
@@ -913,7 +695,7 @@ function backup() {
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "bills-backup.json";
+  a.download = "ledger-backup.json";
   a.click();
   URL.revokeObjectURL(a.href);
   toast("Backup downloaded");
