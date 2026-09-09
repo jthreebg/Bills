@@ -19,13 +19,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --paper: #000000;
-      --paper-2: #1C1C1E;
-      --card: #1C1C1E;
-      --ink: #F5F5F7;
-      --ink-2: #D1D1D6;
-      --mute: #8E8E93;
-      --line: rgba(255, 255, 255, 0.10);
+      --paper: #F3F1EC;
+      --paper-2: #E8E4DC;
+      --card: #FFFFFF;
+      --ink: #12151A;
+      --ink-2: #3A414C;
+      --mute: #6B7280;
+      --line: rgba(18, 21, 26, 0.10);
       --blue: #174A72;
       --blue-2: #C629DD;
       --purple: #C629DD;
@@ -52,13 +52,13 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body {
       margin: 0;
-      background: #000000;
+      background: var(--paper);
       color: var(--ink);
       font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
       min-height: 100%;
     }
     html {
-      background-color: #000000;
+      background-color: var(--paper);
     }
     body {
       padding: calc(18px + var(--safe-t)) 18px calc(96px + var(--safe-b));
@@ -73,6 +73,12 @@
       inset: 0;
       z-index: 0;
       pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 42% at 12% calc(6% + 100px), rgba(22, 74, 122, .16), transparent 62%),
+        radial-gradient(ellipse 55% 36% at 90% calc(14% + 100px), rgba(198, 41, 221, .10), transparent 60%),
+        var(--paper);
+    }
+    html[data-theme="dark"] .bg-glow {
       background:
         radial-gradient(ellipse 70% 42% at 12% calc(6% + 100px), rgba(22, 74, 122, .12), transparent 62%),
         radial-gradient(ellipse 55% 36% at 90% calc(14% + 100px), rgba(198, 41, 221, .08), transparent 60%),
@@ -191,6 +197,18 @@
     button.metric {
       border: 0.75px solid rgba(255,255,255,.14); width: 100%; text-align: center; color: inherit; font: inherit; cursor: pointer;
     }
+    html[data-theme="light"] .metric,
+    html[data-theme="light"] button.metric,
+    html[data-theme="light"] .group {
+      background: linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.70));
+      border-color: rgba(18,21,26,.10);
+      color: var(--ink);
+    }
+    html[data-theme="light"] .who {
+      background: rgba(255,255,255,.78);
+      border-color: rgba(18,21,26,.12);
+    }
+    html[data-theme="light"] .page-title { color: var(--ink); }
     button.metric .lbl { display: flex; align-items: center; justify-content: center; }
     .pay-chip {
       flex: 0 0 auto; border: 0; border-radius: 999px;
@@ -1148,7 +1166,7 @@ function confirmDelete() {
 function applyTheme() {
   const dark = store.theme === "dark";
   document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
-  document.querySelector('meta[name="theme-color"]').setAttribute("content", "#000000");
+  document.querySelector('meta[name="theme-color"]').setAttribute("content", dark ? "#000000" : "#F3F1EC");
   document.getElementById("themeLight").classList.toggle("on", !dark);
   document.getElementById("themeDark").classList.toggle("on", dark);
 }
