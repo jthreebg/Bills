@@ -1,11 +1,15 @@
-const CACHE = "ledger-v4";
+const CACHE = "ledger-v5";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png",
-  "./apple-touch-icon.png"
+  "./icon-1024.png",
+  "./icon-512-maskable.png",
+  "./apple-touch-icon.png",
+  "./favicon-32.png",
+  "./favicon-48.png"
 ];
 
 self.addEventListener("install", (event) => {
