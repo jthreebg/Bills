@@ -236,7 +236,10 @@
       flex: 0 0 auto; border: 0; border-radius: 999px;
       padding: 6px 10px; font: 600 12px Inter, sans-serif;
       background: var(--blue); color: #fff; text-decoration: none;
+      margin-left: 4px;
+      align-self: center;
     }
+    .row-amt { margin-left: auto; }
     html[data-theme="dark"] .pay-chip { background: #C629DD; }
     textarea.notes {
       width: 100%;
@@ -1107,7 +1110,8 @@ const store = {
   pays: [],
   bills: [],
   hours: [],
-  theme: "dark"
+  theme: "dark",
+  who: "all"
 };
 
 function openDB() {
@@ -1166,7 +1170,11 @@ async function load() {
   store.bills = data.bills || [];
   store.hours = data.hours || [];
   store.theme = data.theme === "light" ? "light" : "dark";
+  const savedWho = data.who === "p1" || data.who === "p2" || data.who === "all" ? data.who : "all";
+  store.who = savedWho;
+  who = savedWho;
   applyTheme();
+  syncWhoTabs();
   await persist();
 }
 
@@ -1200,9 +1208,13 @@ function iconFor(name, kind) {
     gym: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"/></svg>',
     media: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="m10 9 5 3-5 3V9Z"/></svg>',
     document: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.8h8l4 4v12.4H6z"/><path d="M14 3.8v4h4M9 12h6M9 15.5h6"/></svg>',
-    card: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2.2"/><path d="M3 10h18"/><path d="M7 15h3.2"/><path d="M16.2 15h2.2"/></svg>'
+    card: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2.2"/><path d="M3 10h18"/><path d="M7 15h3.2"/><path d="M16.2 15h2.2"/></svg>',
+    amazon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.2 8.2c.6-1.6 2-2.6 3.6-2.6 1.8 0 3.2 1 3.8 2.6"/><path d="M6.4 11.2h11.2"/><path d="M8.2 11.2V16c0 .7.5 1.2 1.2 1.2h.8"/><path d="M15.8 11.2V16c0 .7-.5 1.2-1.2 1.2h-.8"/><path d="M5.4 19.2c4.2 2.4 9 2.4 13.2 0"/><path d="m16.6 20.2 2.2-1.2-.2-2"/></svg>',
+    apple: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.4 8.2c-1.2.2-2.4-.4-3.2-1.4-.7-1-.9-2.2-.5-3.3-1.3.3-2.4 1.1-3.1 2.2"/><path d="M8.2 9.6c-1.8 1.2-2.8 3.2-2.6 5.4.3 3.2 2.6 7 4.8 7.1 1.1 0 1.5-.8 2.8-.8 1.4 0 1.7.8 2.8.8 2.2-.1 4.1-3.6 4.5-6.4-2.6-1.2-3-3.8-1.4-5.4-1.1-.8-2.5-1.1-3.7-.8-1.1.3-1.9 1.1-2.6 1.1-.8 0-1.6-.8-2.8-1"/></svg>'
   };
   if (kind === "pay") return icons.pay;
+  if (/amazon|amzn|\bprime\b/.test(s)) return icons.amazon;
+  if (/apple|icloud|itunes|app store|iphone|ipad|macbook/.test(s)) return icons.apple;
   if (/card|visa|mastercard|amex|discover|credit/.test(s)) return icons.card;
   if (/rent|mortgage|home|apt|apartment/.test(s)) return icons.home;
   if (/car|auto|truck|vehicle/.test(s)) return icons.car;
@@ -1232,9 +1244,16 @@ function setPeriod(p, btn) {
   document.querySelectorAll(".seg button").forEach(b => b.classList.toggle("on", b === btn));
   render();
 }
+function syncWhoTabs() {
+  document.querySelectorAll(".who button").forEach(b => {
+    b.classList.toggle("on", b.getAttribute("data-who") === who);
+  });
+}
 function setWho(w, btn) {
-  who = w;
-  document.querySelectorAll(".who button").forEach(b => b.classList.toggle("on", b === btn));
+  who = (w === "p1" || w === "p2") ? w : "all";
+  store.who = who;
+  syncWhoTabs();
+  persist();
   render();
 }
 function nextDue(dueDay) {
@@ -1427,12 +1446,15 @@ function backup() {
     pays: store.pays,
     bills: store.bills,
     hours: store.hours,
-    theme: store.theme
+    theme: store.theme,
+    who: store.who || who
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "bills-backup.json";
+  const d = new Date();
+  const stamp = d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  a.download = "bills-backup-" + stamp + ".json";
   a.click();
   URL.revokeObjectURL(a.href);
   toast("Backup downloaded");
@@ -1455,7 +1477,11 @@ function restore(event) {
       store.bills = data.bills;
       store.hours = data.hours || [];
       store.theme = data.theme === "dark" ? "dark" : (data.theme === "light" ? "light" : store.theme);
-      persist(); applyTheme(); render();
+      if (data.who === "p1" || data.who === "p2" || data.who === "all") {
+        store.who = data.who;
+        who = data.who;
+      }
+      persist(); applyTheme(); syncWhoTabs(); render();
       document.getElementById("n1").value = store.people.p1;
       document.getElementById("n2").value = store.people.p2;
       if (document.getElementById("r1")) {
@@ -1695,7 +1721,7 @@ function render() {
       ? when.toLocaleDateString(undefined,{month:"short", day:"numeric"})
       : "No date";
     const pay = b.payUrl
-      ? `<button type="button" class="pay-chip" onclick="openPay(event, '${esc(b.payUrl).replace(/'/g, "&#39;")}')">Pay</button>`
+      ? `<button type="button" class="pay-chip" data-pay="${esc(b.payUrl)}" onclick="openPay(event)">Pay</button>`
       : "";
     return `
     <div class="swipe-row" data-kind="bill" data-id="${b.id}">
@@ -1708,8 +1734,8 @@ function render() {
             <div class="row-sub">${money(b.amount)} · ${FREQ[b.freq].label} · ${esc(ownerLabel(b.owner))}</div>
             ${b.notes ? `<div class="row-sub">${esc(b.notes)}</div>` : ""}
           </div>
-          ${pay}
           <div class="row-amt">${dateTxt}<small>${b.due ? "due " + b.due : ""}</small></div>
+          ${pay}
         </div>
       </div>
     </div>`;
@@ -1730,8 +1756,8 @@ function render() {
             <div class="row-title">${esc(b.name)}</div>
             <div class="row-sub"><span class="due-dot"></span>${money(b.amount)} · ${esc(ownerLabel(b.owner))}</div>
           </div>
-          ${b.payUrl ? `<button type="button" class="pay-chip" onclick="openPay(event, '${esc(b.payUrl).replace(/'/g, "&#39;")}')">Pay</button>` : ""}
           <div class="row-amt">${b.when.toLocaleDateString(undefined,{weekday:"short", month:"short", day:"numeric"})}<small>due ${b.due}</small></div>
+          ${b.payUrl ? `<button type="button" class="pay-chip" data-pay="${esc(b.payUrl)}" onclick="openPay(event)">Pay</button>` : ""}
         </div>
       </div>
     </div>
@@ -1806,12 +1832,24 @@ function bindSwipe() {
   });
 }
 function openPay(event, url) {
-  event.preventDefault();
-  event.stopPropagation();
-  let u = String(url || "").trim();
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  let u = String(url || (event && event.currentTarget && event.currentTarget.getAttribute("data-pay")) || "").trim();
   if (!u) return;
   if (!/^https?:\/\//i.test(u)) u = "https://" + u;
-  window.open(u, "_blank", "noopener");
+  let opened = null;
+  try { opened = window.open(u, "_blank", "noopener,noreferrer"); } catch (e) { opened = null; }
+  if (!opened) {
+    const a = document.createElement("a");
+    a.href = u;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
 }
 function esc(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
