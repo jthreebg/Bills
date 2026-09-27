@@ -114,6 +114,7 @@
       min-height: 44px;
       position: relative;
       z-index: 5;
+      overflow: visible;
     }
     .brand { display: flex; align-items: center; margin-right: auto; }
     .mark {
@@ -138,6 +139,14 @@
         0 8px 20px rgba(26, 23, 72, .10);
       outline: 1px solid rgba(255,255,255,.38);
       outline-offset: -1px;
+      transform: scale(1);
+      transform-origin: center center;
+      transition: transform 200ms ease;
+      will-change: transform;
+    }
+    .topbar .glass-btn:active,
+    .topbar .glass-btn.pressed {
+      transform: scale(1.25);
     }
     html[data-theme="dark"] .glass-btn {
       color: #F4F1FF;
@@ -434,6 +443,9 @@
     .brand { gap: 0; }
     .glass-btn { width: 44px; height: 44px; }
     .glass-btn svg { width: 20px; height: 20px; }
+    .topbar .glass-btn[aria-label="Back"] svg { width: 12px; height: 20px; }
+    .topbar .glass-btn[aria-label="Home"] svg,
+    .topbar #gearBtn svg { width: 24px; height: 24px; }
 
     /* Shared Liquid Glass pill */
     .who {
@@ -708,6 +720,142 @@
       color: #F3F1EC !important;
     }
 
+    .who, .seg, .theme-row {
+      position: relative;
+      display: grid;
+      gap: 0;
+      padding: 3px;
+      overflow: hidden;
+      border-radius: 999px;
+      transform-origin: center center;
+    }
+    .who button,
+    .seg button,
+    .theme-row button {
+      position: relative;
+      z-index: 1;
+      background: transparent !important;
+      box-shadow: none !important;
+      border: 0 !important;
+      outline: 0;
+    }
+    .who button.on,
+    .theme-row button.on,
+    .seg button.on {
+      background: transparent !important;
+      box-shadow: none !important;
+      color: transparent !important;
+    }
+    .pill-thumb {
+      position: absolute;
+      top: 3px;
+      left: 0;
+      height: calc(100% - 6px);
+      width: 33%;
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translateX(0);
+      transform-origin: center center;
+      will-change: transform, width;
+      transition: width 240ms cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+    .pill-thumb-label {
+      display: block;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .who .pill-thumb,
+    .theme-row .pill-thumb {
+      color: #FFFFFF;
+      font: 600 12px Inter, sans-serif;
+      letter-spacing: -0.01em;
+    }
+    .theme-row .pill-thumb {
+      font-size: 14px;
+    }
+    .seg .pill-thumb {
+      color: #12151A;
+      font: 500 13px Inter, sans-serif;
+    }
+    /* no extra jiggle — slide only */
+    .who .pill-thumb,
+    .theme-row .pill-thumb {
+      background: #C629DD;
+      box-shadow: 0 4px 14px rgba(126,25,147,.22);
+    }
+    .seg .pill-thumb {
+      background: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(18,21,26,.16);
+    }
+    .theme-row {
+      background: rgba(255,255,255,.08) !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+    html[data-theme="light"] .theme-row {
+      background: rgba(18,21,26,.08) !important;
+    }
+    .who {
+      background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.08)),
+                  rgba(198,41,221,.16) !important;
+      border: 1px solid rgba(198,41,221,.22) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.48),
+        inset 0 -1px 0 rgba(255,255,255,.10),
+        0 8px 22px rgba(73,22,87,.10) !important;
+      backdrop-filter: blur(22px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(22px) saturate(180%) !important;
+    }
+    html[data-theme="dark"] .who {
+      background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04)),
+                  rgba(198,41,221,.16) !important;
+      border-color: rgba(198,41,221,.28) !important;
+    }
+    html[data-theme="light"] .who {
+      background: linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.52)),
+                  rgba(198,41,221,.10) !important;
+      border-color: rgba(198,41,221,.18) !important;
+    }
+    .btn,
+    .fab,
+    button.metric,
+    .pay-chip,
+    .linkish,
+    .confirm-cancel,
+    .confirm-delete {
+      -webkit-tap-highlight-color: transparent;
+      transform: scale(1);
+      transform-origin: center center;
+      transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .btn.pressed,
+    .btn:active,
+    .fab.pressed,
+    .fab:active,
+    button.metric.pressed,
+    button.metric:active,
+    .pay-chip.pressed,
+    .pay-chip:active,
+    .linkish.pressed,
+    .linkish:active,
+    .confirm-cancel.pressed,
+    .confirm-cancel:active,
+    .confirm-delete.pressed,
+    .confirm-delete:active {
+      transform: scale(0.97);
+      transition-duration: 90ms;
+      transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+
 
     /* Upcoming bills = individual Liquid Glass tiles */
     #upcoming.group,
@@ -821,7 +969,7 @@
         </svg>
       </button>
       <button class="glass-btn" onclick="goHome()" aria-label="Home">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path d="M4.2 10.4 12 3.8l7.8 6.6v8.3a1.7 1.7 0 0 1-1.7 1.7h-3.4v-5.2h-5.4v5.2H5.9a1.7 1.7 0 0 1-1.7-1.7v-8.3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
         </svg>
       </button>
@@ -831,7 +979,7 @@
     </div>
     <div class="page-title" id="pageTitle">Settings</div>
     <button class="glass-btn" id="gearBtn" onclick="openPage('settings')" aria-label="Settings">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9.59 3.94c.09-.54.56-.94 1.11-.94h2.6c.55 0 1.02.4 1.11.94l.21 1.28c.06.37.31.69.65.87l.22.13c.32.2.72.26 1.07.12l1.22-.45a1.13 1.13 0 0 1 1.37.49l1.3 2.25c.27.47.16 1.08-.26 1.43l-1 .83c-.29.24-.44.61-.43.99v.26c0 .38.14.75.43.99l1 .83c.42.35.53.96.26 1.43l-1.3 2.25a1.13 1.13 0 0 1-1.37.49l-1.22-.46c-.35-.13-.75-.07-1.07.13l-.22.12c-.34.19-.59.5-.65.87l-.21 1.28c-.09.54-.56.94-1.11.94h-2.6c-.55 0-1.02-.4-1.11-.94l-.21-1.28c-.06-.37-.31-.69-.65-.87l-.22-.12c-.32-.2-.72-.26-1.07-.13l-1.22.46a1.13 1.13 0 0 1-1.37-.49l-1.3-2.25a1.13 1.13 0 0 1 .26-1.43l1-.83c.29-.24.44-.61.43-.99v-.26c0-.38-.14-.75-.43-.99l-1-.83a1.13 1.13 0 0 1-.26-1.43l1.3-2.25a1.13 1.13 0 0 1 1.37-.49l1.22.45c.35.14.75.08 1.07-.12l.22-.13c.34-.18.59-.5.65-.87l.21-1.28Z"/>
         <circle cx="12" cy="12" r="3"/>
       </svg>
@@ -840,6 +988,7 @@
 
   <div id="homePage" class="page on">
   <div class="who" role="tablist">
+    <span class="pill-thumb" aria-hidden="true"><span class="pill-thumb-label">Combined</span></span>
     <button class="on" data-who="all" id="tabAll" onclick="setWho('all', this)">Combined</button>
     <button data-who="p1" id="tabP1" onclick="setWho('p1', this)">You</button>
     <button data-who="p2" id="tabP2" onclick="setWho('p2', this)">Partner</button>
@@ -850,6 +999,7 @@
     <div class="hero-amt" id="heroAmt">$0</div>
     <div class="hero-hint" id="heroHint">Add a paycheck to see what’s left</div>
     <div class="seg" role="tablist">
+      <span class="pill-thumb" aria-hidden="true"><span class="pill-thumb-label">Week</span></span>
       <button class="on" data-p="week" onclick="setPeriod('week', this)">Week</button>
       <button data-p="month" onclick="setPeriod('month', this)">Month</button>
       <button data-p="year" onclick="setPeriod('year', this)">Year</button>
@@ -999,6 +1149,7 @@
     <section class="section">
       <div class="section-h"><h2>Appearance</h2></div>
       <div class="theme-row">
+        <span class="pill-thumb" aria-hidden="true"><span class="pill-thumb-label">Light</span></span>
         <button type="button" id="themeLight" onclick="setTheme('light')">Light</button>
         <button type="button" id="themeDark" onclick="setTheme('dark')">Dark</button>
       </div>
@@ -1239,15 +1390,78 @@ function visible(item) {
   if (who === "all") return true;
   return item.owner === who;
 }
+function slidePill(track, animate) {
+  if (!track || track.getBoundingClientRect().width < 2) return;
+  let thumb = track.querySelector(".pill-thumb");
+  if (!thumb) {
+    thumb = document.createElement("span");
+    thumb.className = "pill-thumb";
+    thumb.setAttribute("aria-hidden", "true");
+    thumb.innerHTML = '<span class="pill-thumb-label"></span>';
+    track.insertBefore(thumb, track.firstChild);
+  }
+  let label = thumb.querySelector(".pill-thumb-label");
+  if (!label) {
+    label = document.createElement("span");
+    label.className = "pill-thumb-label";
+    thumb.appendChild(label);
+  }
+  const btn = track.querySelector("button.on") || track.querySelector("button");
+  if (!btn) return;
+  const x = btn.offsetLeft;
+  const w = btn.offsetWidth;
+  if (w < 2) return;
+  const cs = getComputedStyle(btn);
+  label.textContent = (btn.textContent || "").trim();
+  label.style.font = cs.font;
+  label.style.letterSpacing = cs.letterSpacing;
+  let from = Number(thumb.dataset.x || x);
+  try {
+    const t = getComputedStyle(thumb).transform;
+    if (t && t !== "none") from = new DOMMatrixReadOnly(t).m41;
+  } catch (e) {}
+  const moved = Math.abs(x - from) > 1;
+  if (thumb._pillAnim) {
+    thumb._pillAnim.cancel();
+    thumb._pillAnim = null;
+  }
+  thumb.style.width = w + "px";
+  thumb.dataset.x = String(x);
+  const rest = "translateX(" + x + "px) scale(1, 1)";
+  if (!(animate && moved && thumb.animate)) {
+    thumb.style.transform = rest;
+    return;
+  }
+  const nudge = (x >= from ? 1 : -1) * 4;
+  thumb._pillAnim = thumb.animate([
+    { transform: "translateX(" + from + "px) scale(1, 1)" },
+    { transform: "translateX(" + (x + nudge) + "px) scale(1.028, 0.982)", offset: 0.40 },
+    { transform: "translateX(" + (x - nudge * 0.22) + "px) scale(0.992, 1.008)", offset: 0.68 },
+    { transform: rest }
+  ], {
+    duration: 708,
+    easing: "cubic-bezier(0.22, 0.86, 0.28, 1)",
+    fill: "forwards"
+  });
+  thumb._pillAnim.onfinish = () => {
+    thumb.style.transform = rest;
+    thumb._pillAnim = null;
+  };
+}
+function refreshPills(animate) {
+  document.querySelectorAll(".who, .seg, .theme-row").forEach(t => slidePill(t, animate));
+}
 function setPeriod(p, btn) {
   period = p;
   document.querySelectorAll(".seg button").forEach(b => b.classList.toggle("on", b === btn));
+  refreshPills(true);
   render();
 }
 function syncWhoTabs() {
   document.querySelectorAll(".who button").forEach(b => {
     b.classList.toggle("on", b.getAttribute("data-who") === who);
   });
+  refreshPills(true);
 }
 function setWho(w, btn) {
   who = (w === "p1" || w === "p2") ? w : "all";
@@ -1285,6 +1499,7 @@ function showPage(name) {
   document.body.classList.remove("subpage", "page-home", "page-settings", "page-editor");
   if (name !== "home") document.body.classList.add("subpage", "page-" + name);
   document.getElementById("pageTitle").textContent = PAGE_TITLES[name] || "";
+  requestAnimationFrame(() => refreshPills(false));
 }
 function openPage(name) {
   if (navStack[navStack.length - 1] !== name) navStack.push(name);
@@ -1419,6 +1634,7 @@ function setTheme(mode) {
   store.theme = mode;
   applyTheme();
   persist();
+  refreshPills(true);
   toast(mode === "dark" ? "Dark mode" : "Light mode");
 }
 function saveNames() {
@@ -1857,12 +2073,38 @@ function esc(s) {
 
 load().then(() => {
   render();
+  refreshPills(false);
   if (location.hash === "#settings") openPage("settings");
   if (location.hash === "#editor") openSheet("bill");
 });
+window.addEventListener("resize", () => refreshPills(false));
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js");
 }
+(function bindHeaderPress() {
+  const off = (btn) => btn.classList.remove("pressed");
+  document.querySelectorAll(".topbar .glass-btn").forEach((btn) => {
+    btn.addEventListener("pointerdown", () => btn.classList.add("pressed"));
+    btn.addEventListener("pointerup", () => off(btn));
+    btn.addEventListener("pointerleave", () => off(btn));
+    btn.addEventListener("pointercancel", () => off(btn));
+  });
+})();
+(function bindActionPress() {
+  const sel = ".btn, .fab, button.metric, .pay-chip, .linkish, .confirm-cancel, .confirm-delete";
+  const hit = (e) => e.target.closest && e.target.closest(sel);
+  document.addEventListener("pointerdown", (e) => {
+    const btn = hit(e);
+    if (btn) btn.classList.add("pressed");
+  });
+  const clear = () => document.querySelectorAll(sel + ".pressed").forEach(b => b.classList.remove("pressed"));
+  document.addEventListener("pointerup", clear);
+  document.addEventListener("pointercancel", clear);
+  document.addEventListener("pointerleave", (e) => {
+    const btn = hit(e);
+    if (btn) btn.classList.remove("pressed");
+  }, true);
+})();
 </script>
 </body>
 </html>
